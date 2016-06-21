@@ -9,9 +9,9 @@ module.exports.streambotReplicate = streambot(replicate);
 module.exports.backup = incrementalBackup;
 module.exports.streambotBackup = streambot(incrementalBackup);
 
-// process.env.BackupBucket = 'dynamo-incremental-backups'
-// process.env.BackupPrefix = 'forms.blue'
-// process.env.MultiTenancyColumn = 'InstanceId'
+//process.env.BackupBucket = 'pageup-dynamo-tokyo'
+//process.env.BackupPrefix = 'forms'
+//process.env.MultiTenancyColumn = 'RANGE'
 //process.env.PlainTextKeyAsFilename = true;
 
 function replicate(event, context, callback) {
