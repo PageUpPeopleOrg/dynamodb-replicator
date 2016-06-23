@@ -16,9 +16,9 @@ New-Item .\package\temp\index.js -type file -f
 
 get-content .\config\$environmentFile,".\index.js" | set-content ".\package\temp\index.js"
 
-$version = Read-Host -Prompt 'What version of the application are you deploying?'
+$packageName = "LambdaFunction"
 
-$destination = $currentdir + "\package\" + $version + ".zip"
+$destination = $currentdir + "\package\" + $packageName + ".zip"
 
 Add-Type -assembly "system.io.compression.filesystem"
 [io.compression.zipfile]::CreateFromDirectory($currentdir + "\package\temp", $destination)
