@@ -16,6 +16,16 @@ Managing table redundancy and backups involves many moving parts. Please read [D
 
 [dynamodb-replicator](https://github.com/mapbox/dynamodb-replicator) provides several CLI tools to help manage your DynamoDB table.
 
+### Config and Packaging
+
+For windows users: a powershell script is available to packing the lambda function with a preset config file consisting of environment variables.
+Once the script is run, you will be prompted for the name of the config file you would like to deploy alongside your function. 
+The config files should be stored under .\config\
+
+```
+> .\package.ps1
+> What is the name of the config file you would like to load: Forms-dc4.env
+
 ### diff-record
 
 Given two tables and an item's key, this script looks up the record in both tables and checks for consistency.
