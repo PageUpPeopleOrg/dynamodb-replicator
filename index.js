@@ -12,20 +12,23 @@ module.exports.streambotBackup = streambot(incrementalBackup);
 function replicate(event, context, callback) {
     var replicaConfig = {
         table: process.env.ReplicaTable,
-        region: process.env.ReplicaRegion,
         maxRetries: 1000,
         httpOptions: {
             timeout: 750,
             agent: streambot.agent
         }
     };
+    
+    if (!process.env.ReplicaRegion) replicaConfig.region = event.Records[0].awsRegion;
     if (process.env.ReplicaEndpoint) replicaConfig.endpoint = process.env.ReplicaEndpoint;
+
     var replica = new Dyno(replicaConfig);
 
-    var keyAttrs = Object.keys(event.Records[0].dynamodb.Keys);
+    var keyAttrs = Object.keys(event.Records[0].dynamodb.Keys);  
 
     var allRecords = event.Records.reduce(function(allRecords, change) {
         var id = JSON.stringify(change.dynamodb.Keys);
+        id = id.replace('"InstanceId":{"N"', '"InstanceId":{"S"');
         allRecords[id] = allRecords[id] || [];
         allRecords[id].push(change);
         return allRecords;
@@ -36,11 +39,11 @@ function replicate(event, context, callback) {
         var change = allRecords[key].pop();
         if (change.eventName === 'INSERT' || change.eventName === 'MODIFY') {
             return {
-                PutRequest: { Item: Dyno.deserialize(JSON.stringify(change.dynamodb.NewImage)) }
+                PutRequest: { Item: Dyno.deserialize(JSON.stringify(change.dynamodb.NewImage).replace('"InstanceId":{"N"', '"InstanceId":{"S"')) }
             };
         } else if (change.eventName === 'REMOVE') {
             return {
-                DeleteRequest: { Key: Dyno.deserialize(JSON.stringify(change.dynamodb.Keys)) }
+                DeleteRequest: { Key: Dyno.deserialize(JSON.stringify(change.dynamodb.Keys).replace('"InstanceId":{"N"', '"InstanceId":{"S"')) }
             }
         }
     });
